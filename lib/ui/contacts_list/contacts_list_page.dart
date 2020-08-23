@@ -2,6 +2,8 @@ import 'package:contacts_app/data/contact.dart';
 import 'package:flutter/material.dart';
 import 'package:faker/faker.dart' as faker;
 
+import 'widget/contact_tile.dart';
+
 class ContactsListPage extends StatefulWidget {
   // _ siginifica que uma propriedade é privada.
   @override
@@ -35,21 +37,7 @@ class _ContactsListPageState extends State<ContactsListPage> {
         itemCount: _contacts.length,
         //runs & builds every single list item
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_contacts[index].name),
-            subtitle: Text(_contacts[index].email),
-            trailing: IconButton(
-              icon: Icon(
-                _contacts[index].isFavorite ? Icons.stars : Icons.star_border,
-                color: _contacts[index].isFavorite ? Colors.amber : Colors.grey,
-              ),
-              onPressed: () {
-                setState(() {
-                  _contacts[index].isFavorite = !_contacts[index].isFavorite;
-                });
-              },
-            ),
-          );
+          return ContactTile(contacts: _contacts);
         },
       ),
     );
