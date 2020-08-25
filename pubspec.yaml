@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   faker: ^1.2.1
+  scoped_model: ^1.0.1
 
 
 

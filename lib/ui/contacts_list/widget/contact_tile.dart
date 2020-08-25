@@ -1,41 +1,33 @@
-
-import 'package:contacts_app/data/contact.dart';
+import 'package:contacts_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class ContactTile extends StatelessWidget {
   const ContactTile({
     Key key,
-\\    @required List<Contact> contacts,
-  }) : _contacts = contacts, super(key: key);
+    @required this.contactIndex,
+  }) : super(key: key);
 
-  final List<Contact> _contacts;
+  final int contactIndex;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(_contacts[index].name),
-      subtitle: Text(_contacts[index].email),
-      trailing: IconButton(
-        icon: Icon(
-          _contacts[index].isFavorite ? Icons.stars : Icons.star_border,
-          color: _contacts[index].isFavorite ? Colors.amber : Colors.grey,
+    return ScopedModelDescendant<ContactsModel>(
+        builder: (context, child, model) {
+      final displayedContact = model.contacts[contactIndex];
+      return ListTile(
+        title: Text(displayedContact.name),
+        subtitle: Text(displayedContact.email),
+        trailing: IconButton(
+          icon: Icon(
+            displayedContact.isFavorite ? Icons.stars : Icons.star_border,
+            color: displayedContact.isFavorite ? Colors.amber : Colors.grey,
+          ),
+          onPressed: () {
+            model.changeFavoriteStatus(contactIndex);
+          },
         ),
-        onPressed: () {
-          setState(() {
-            _contacts[index].isFavorite = !_contacts[index].isFavorite;
-            _contacts.sort((a,b){
-              if(a.isFavorite){
-                return -1;
-              }else if(b.isFavorite){
-                return 1;
-              }else{
-                return 0;
-              }
-            }
-            );
-          });
-        },
-      ),
-    );
+      );
+    });
   }
 }
