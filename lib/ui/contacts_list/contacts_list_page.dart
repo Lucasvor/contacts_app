@@ -1,3 +1,4 @@
+import 'package:contacts_app/ui/contact/contact_create_page.dart';
 import 'package:contacts_app/ui/model/contacts_model.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -19,17 +20,25 @@ class _ContactsListPageState extends State<ContactsListPage> {
         title: Text('Contatos'),
       ),
       body: ScopedModelDescendant<ContactsModel>(
-          builder: (context, child, model) {
-        return ListView.builder(
-          itemCount: model.contacts.length,
-          //runs & builds every single list item
-          itemBuilder: (context, index) {
-            return ContactTile(
-              contactIndex: index,
-            );
-          },
-        );
-      }),
+        builder: (context, child, model) {
+          return ListView.builder(
+            itemCount: model.contacts.length,
+            //runs & builds every single list item
+            itemBuilder: (context, index) {
+              return ContactTile(
+                contactIndex: index,
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ContactCreatePage()));
+        },
+        child: Icon(Icons.person_add),
+      ),
     );
   }
 }
