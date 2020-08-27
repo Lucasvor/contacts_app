@@ -21,15 +21,19 @@ class _ContactsListPageState extends State<ContactsListPage> {
       ),
       body: ScopedModelDescendant<ContactsModel>(
         builder: (context, child, model) {
-          return ListView.builder(
-            itemCount: model.contacts.length,
-            //runs & builds every single list item
-            itemBuilder: (context, index) {
-              return ContactTile(
-                contactIndex: index,
-              );
-            },
-          );
+          if (model.isLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return ListView.builder(
+              itemCount: model.contacts.length,
+              //runs & builds every single list item
+              itemBuilder: (context, index) {
+                return ContactTile(
+                  contactIndex: index,
+                );
+              },
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(

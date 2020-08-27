@@ -24,11 +24,25 @@ class ContactTile extends StatelessWidget {
           color: Colors.red,
           icon: Icons.delete,
           onTap: () {
-            model.deleteContact(contactIndex);
+            model.deleteContact(displayedContact);
           },
         )
       ],
       actionPane: SlidableBehindActionPane(),
+      actions: <Widget>[
+        IconSlideAction(
+          caption: "Chamar",
+          color: Colors.green,
+          icon: Icons.phone,
+          onTap: () {},
+        ),
+        IconSlideAction(
+          caption: "Email",
+          color: Colors.blue,
+          icon: Icons.email,
+          onTap: () {},
+        ),
+      ],
       child: _buildContent(
         context,
         displayedContact,
@@ -54,15 +68,15 @@ class ContactTile extends StatelessWidget {
             color: displayedContact.isFavorite ? Colors.amber : Colors.grey,
           ),
           onPressed: () {
-            model.changeFavoriteStatus(contactIndex);
+            model.changeFavoriteStatus(displayedContact);
           },
         ),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => ContactEditPage(
-                  editedContact: displayedContact,
-                  editedcontactindex: contactIndex),
+                editedContact: displayedContact,
+              ),
             ),
           );
         },
@@ -74,8 +88,21 @@ class ContactTile extends StatelessWidget {
     return Hero(
       tag: displayedContact.hashCode,
       child: CircleAvatar(
-        child: Text(displayedContact.name[0]),
+        child: _buildCircleAvatarContent(displayedContact),
       ),
     );
+  }
+
+  Widget _buildCircleAvatarContent(Contact displayedContact) {
+    if (displayedContact.imageFile == null) {
+      return Text(displayedContact.name[0]);
+    } else {
+      return ClipOval(
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Image.file(displayedContact.imageFile),
+        ),
+      );
+    }
   }
 }

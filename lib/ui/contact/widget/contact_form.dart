@@ -8,9 +8,10 @@ import 'package:scoped_model/scoped_model.dart';
 
 class ContactForm extends StatefulWidget {
   final Contact editedContact;
-  final int editedcontactindex;
-  ContactForm({Key key, this.editedContact, this.editedcontactindex})
-      : super(key: key);
+  ContactForm({
+    Key key,
+    this.editedContact,
+  }) : super(key: key);
 
   @override
   _ContactFormState createState() => _ContactFormState();
@@ -23,6 +24,13 @@ class _ContactFormState extends State<ContactForm> {
   String _phoneNumber;
   File _contactImageFile;
   bool get isEditMode => widget.editedContact != null;
+  bool get hasSelectedCustomImagem => _contactImageFile != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _contactImageFile = widget.editedContact?.imageFile;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,27 +120,31 @@ class _ContactFormState extends State<ContactForm> {
   }
 
   Widget _buildCircleAvatarContent(double halfScreenDiameter) {
-    if (isEditMode) {
-      if (_contactImageFile == null) {
-        return Text(
-          widget.editedContact.name[0],
-          style: TextStyle(fontSize: halfScreenDiameter / 4),
-        );
-      } else {
-        return ClipOval(
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Image.file(
-              _contactImageFile,
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
-      }
+    if (isEditMode || hasSelectedCustomImagem) {
+      return _buildEditModeCircleAvatarContent(halfScreenDiameter);
     } else {
       return Icon(
         Icons.person,
         size: halfScreenDiameter / 4,
+      );
+    }
+  }
+
+  Widget _buildEditModeCircleAvatarContent(double halfScreenDiameter) {
+    if (_contactImageFile == null) {
+      return Text(
+        widget.editedContact.name[0],
+        style: TextStyle(fontSize: halfScreenDiameter / 4),
+      );
+    } else {
+      return ClipOval(
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Image.file(
+            _contactImageFile,
+            fit: BoxFit.cover,
+          ),
+        ),
       );
     }
   }
@@ -174,11 +186,14 @@ class _ContactFormState extends State<ContactForm> {
         email: _email,
         phoneNumber: _phoneNumber,
         isFavorite: widget.editedContact?.isFavorite ?? false,
+        imageFile: _contactImageFile,
       );
 
       if (isEditMode) {
-        ScopedModel.of<ContactsModel>(context)
-            .updateContact(newOrEditedContact, widget.editedcontactindex);
+        newOrEditedContact.id = widget.editedContact.id;
+        ScopedModel.of<ContactsModel>(context).updateContact(
+          newOrEditedContact,
+        );
       } else {
         ScopedModel.of<ContactsModel>(context).addContact(newOrEditedContact);
       }

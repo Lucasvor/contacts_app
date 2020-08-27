@@ -1,60 +1,48 @@
 import 'package:contacts_app/data/contact.dart';
+import 'package:contacts_app/data/db/contact_dao.dart';
 import 'package:faker/faker.dart' as faker;
 import 'package:scoped_model/scoped_model.dart';
 
 class ContactsModel extends Model {
-  List<Contact> _contacts = List.generate(50, (index) {
-    return Contact(
-      name: faker.Person().firstName() + ' ' + faker.Person().lastName(),
-      email: faker.Internet().freeEmail(),
-      phoneNumber: faker.RandomGenerator().integer(100000000).toString(),
-    );
-  });
+  final ContactDao _contactDao = ContactDao();
+
+  List<Contact> _contacts;
+
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
 
   List<Contact> get contacts => _contacts;
-  void addContact(Contact value) {
-    _contacts.add(value);
+
+  Future loadContacts() async {
+    _isLoading = true;
+    notifyListeners();
+    _contacts = await _contactDao.getAllInSortedOrder();
+    _isLoading = false;
     notifyListeners();
   }
 
-  void updateContact(Contact contact, int contactIndex) {
-    _contacts[contactIndex] = contact;
+  Future addContact(Contact value) async {
+    await _contactDao.insert(value);
+    await loadContacts();
     notifyListeners();
   }
 
-  void deleteContact(int index) {
-    _contacts.removeAt(index);
+  Future updateContact(Contact contact) async {
+    await _contactDao.update(contact);
+    await loadContacts();
     notifyListeners();
   }
 
-  void changeFavoriteStatus(int index) {
-    _contacts[index].isFavorite = !_contacts[index].isFavorite;
-    _sortContacts();
+  Future deleteContact(Contact contact) async {
+    await _contactDao.delete(contact);
+    await loadContacts();
     notifyListeners();
   }
 
-  void _sortContacts() {
-    _contacts.sort((a, b) {
-      int comparisonResult;
-      comparisonResult = _compareBasedOnFavoriteStatus(a, b);
-      if (comparisonResult == 0) {
-        comparisonResult = _compareAlphabetically(a, b);
-      }
-      return comparisonResult;
-    });
-  }
-
-  int _compareBasedOnFavoriteStatus(Contact a, Contact b) {
-    if (a.isFavorite) {
-      return -1;
-    } else if (b.isFavorite) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  int _compareAlphabetically(Contact a, Contact b) {
-    return a.name.compareTo(b.name);
+  Future changeFavoriteStatus(Contact contact) async {
+    contact.isFavorite = !contact.isFavorite;
+    await _contactDao.update(contact);
+    _contacts = await _contactDao.getAllInSortedOrder();
+    notifyListeners();
   }
 }

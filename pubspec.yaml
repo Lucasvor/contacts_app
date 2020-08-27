@@ -27,6 +27,8 @@ dependencies:
   scoped_model: ^1.0.1
   flutter_slidable: ^0.5.5
   image_picker: ^0.6.7+7
+  sembast: ^2.4.7+6
+  path_provider: ^1.6.14
 
 
 
